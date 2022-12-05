@@ -1,8 +1,8 @@
 use std::collections::HashSet;
 
-use crate::test_puzzle;
+use crate::{shared::PuzzleResult, test_puzzle};
 
-pub fn part1(input: &str) -> i64 {
+pub fn part1(input: &str) -> PuzzleResult {
     let rucksack = transform_input_for_part1(input);
 
     rucksack
@@ -14,10 +14,11 @@ pub fn part1(input: &str) -> i64 {
                 get_item_priority(common_item).expect("common item should have priority") as i32;
             priority as i64
         })
-        .sum()
+        .sum::<i64>()
+        .into()
 }
 
-pub fn part2(input: &str) -> i64 {
+pub fn part2(input: &str) -> PuzzleResult {
     let groups = transform_input_for_part2(input);
 
     groups
@@ -29,7 +30,8 @@ pub fn part2(input: &str) -> i64 {
                 get_item_priority(common_item).expect("common item should have priority") as i32;
             priority as i64
         })
-        .sum()
+        .sum::<i64>()
+        .into()
 }
 
 fn get_common_item(item_groups: &[String]) -> Option<char> {

@@ -1,27 +1,31 @@
 use std::str::FromStr;
 
-use crate::test_puzzle;
+use crate::{shared::PuzzleResult, test_puzzle};
 
 mod cleaning;
 
-pub fn part1(input: &str) -> i64 {
+pub fn part1(input: &str) -> PuzzleResult {
     let pairs = transform_input(input);
 
-    pairs
+    let result = pairs
         .iter()
         .filter(|(first, second)| first.contains(second) || second.contains(first))
         .collect::<Vec<_>>()
-        .len() as i64
+        .len() as i64;
+
+    result.into()
 }
 
-pub fn part2(input: &str) -> i64 {
+pub fn part2(input: &str) -> PuzzleResult {
     let pairs = transform_input(input);
 
-    pairs
+    let result = pairs
         .iter()
         .filter(|(first, second)| first.overlap(second))
         .collect::<Vec<_>>()
-        .len() as i64
+        .len() as i64;
+
+    result.into()
 }
 
 fn transform_input(input: &str) -> Vec<(cleaning::Section, cleaning::Section)> {

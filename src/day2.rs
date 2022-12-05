@@ -1,10 +1,10 @@
 use std::str::FromStr;
 
-use crate::test_puzzle;
+use crate::{shared::PuzzleResult, test_puzzle};
 
 mod rps;
 
-pub fn part1(input: &str) -> i64 {
+pub fn part1(input: &str) -> PuzzleResult {
     let moves = transform_input_for_part1(input);
 
     moves
@@ -14,10 +14,11 @@ pub fn part1(input: &str) -> i64 {
             let result_score: i64 = my_move.get_result(their_move).score().into();
             (move_score + result_score) as i64
         })
-        .sum()
+        .sum::<i64>()
+        .into()
 }
 
-pub fn part2(input: &str) -> i64 {
+pub fn part2(input: &str) -> PuzzleResult {
     let moves = transform_input_for_part2(input);
 
     moves
@@ -32,7 +33,8 @@ pub fn part2(input: &str) -> i64 {
             let result_score = my_move.get_result(their_move).score();
             (move_score + result_score) as i64
         })
-        .sum()
+        .sum::<i64>()
+        .into()
 }
 
 fn transform_input_for_part1(input: &str) -> Vec<(rps::Move, rps::Move)> {

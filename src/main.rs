@@ -4,11 +4,12 @@ mod day1;
 mod day2;
 mod day3;
 mod day4;
+mod day5;
 
 #[macro_use]
 mod shared;
 
-define_solvers!(SOLVERS, day1, day2, day3, day4);
+define_solvers!(SOLVERS, day1, day2, day3, day4, day5);
 
 fn main() {
     let args: Vec<String> = args().collect();
@@ -24,12 +25,15 @@ fn main() {
         .map(|arg| arg.parse::<u8>().expect("test should be equal to 0 or 1"))
         .unwrap_or(0);
 
-    let filename = if test == 1 { "test" } else { "input" };
+    let use_test_data = test == 1;
+    let filename = if use_test_data { "test" } else { "input" };
 
     let input = shared::read_input(day as u8, filename);
     let solver = SOLVERS[day - 1][part - 1];
 
     let result = solver(&input);
 
-    println!("Result for day {day} part {part}: {result}");
+    let data_type = if use_test_data { "test" } else { "real" };
+
+    println!("Result for day {day} part {part} ({data_type} data): {result}");
 }

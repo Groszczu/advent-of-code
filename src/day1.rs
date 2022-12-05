@@ -1,6 +1,6 @@
-use crate::test_puzzle;
+use crate::{shared::PuzzleResult, test_puzzle};
 
-pub fn part1(input: &str) -> i64 {
+pub fn part1(input: &str) -> PuzzleResult {
     let elf_calories = transform_input(input);
 
     elf_calories
@@ -8,9 +8,10 @@ pub fn part1(input: &str) -> i64 {
         .map(|calories| calories.iter().sum::<i64>())
         .max()
         .unwrap_or(0)
+        .into()
 }
 
-pub fn part2(input: &str) -> i64 {
+pub fn part2(input: &str) -> PuzzleResult {
     let elf_calories = transform_input(input);
 
     let top_3_calories = elf_calories
@@ -29,7 +30,7 @@ pub fn part2(input: &str) -> i64 {
             top_3_calories
         });
 
-    top_3_calories.iter().sum::<i64>()
+    top_3_calories.iter().sum::<i64>().into()
 }
 
 fn transform_input(input: &str) -> Vec<Vec<i64>> {
