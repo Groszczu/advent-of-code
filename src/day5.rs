@@ -1,16 +1,16 @@
 use crate::{shared::PuzzleResult, test_puzzle};
 
+mod crane;
+
 pub fn part1(input: &str) -> PuzzleResult {
     let (mut stacks, instructions) = transform_input(input);
 
     for instruction in instructions {
         let (quantity, from, to) = instruction;
 
-        let from_index = (from - 1) as usize;
-        let to_index = (to - 1) as usize;
-        let from_len = stacks[from_index].len();
-        let crates_to_move = stacks[from_index].split_off(from_len - quantity as usize);
-        stacks[to_index].extend(crates_to_move.iter().rev());
+        let crates_to_move = pick_crates_up(&mut stacks, quantity, from);
+
+        put_creates_down(&mut stacks, to, crates_to_move.iter().copied().rev());
     }
 
     get_result(&stacks)
@@ -22,11 +22,9 @@ pub fn part2(input: &str) -> PuzzleResult {
     for instruction in instructions {
         let (quantity, from, to) = instruction;
 
-        let from_index = (from - 1) as usize;
-        let to_index = (to - 1) as usize;
-        let from_len = stacks[from_index].len();
-        let crates_to_move = stacks[from_index].split_off(from_len - quantity as usize);
-        stacks[to_index].extend(crates_to_move.iter());
+        let crates_to_move = pick_crates_up(&mut stacks, quantity, from);
+
+        put_creates_down(&mut stacks, to, crates_to_move.iter().copied());
     }
 
     get_result(&stacks)
@@ -47,10 +45,7 @@ fn transform_input(input: &str) -> (Vec<Vec<&str>>, Vec<(i32, i32, i32)>) {
         .map(|instruction| {
             let instruction_parts = instruction
                 .split(' ')
-                .map(|part| {
-                    part.parse::<i32>()
-                        .expect("instruction should contain numbers")
-                })
+                .filter_map(|part| part.parse::<i32>().ok())
                 .collect::<Vec<i32>>();
 
             (
@@ -62,6 +57,21 @@ fn transform_input(input: &str) -> (Vec<Vec<&str>>, Vec<(i32, i32, i32)>) {
         .collect();
 
     (start_position, move_instructions)
+}
+
+fn pick_crates_up<'a>(stacks: &mut Vec<Vec<&'a str>>, quantity: i32, from: i32) -> Vec<&'a str> {
+    let from_index = (from - 1) as usize;
+    let from_len = stacks[from_index].len();
+    stacks[from_index].split_off(from_len - quantity as usize)
+}
+
+fn put_creates_down<'a>(
+    stacks: &mut Vec<Vec<&'a str>>,
+    to: i32,
+    crates: impl Iterator<Item = &'a str>,
+) -> () {
+    let to_index = (to - 1) as usize;
+    stacks[to_index].extend(crates);
 }
 
 fn get_result(stacks: &Vec<Vec<&str>>) -> PuzzleResult {
