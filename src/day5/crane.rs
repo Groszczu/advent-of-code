@@ -43,7 +43,7 @@ pub enum CrateMover {
 impl CrateMover {
     pub fn order_containers(&self, containers_to_move: Vec<Container>) -> Vec<Container> {
         match self {
-            Self::V9000 => containers_to_move.iter().cloned().rev().collect::<Vec<_>>(),
+            Self::V9000 => containers_to_move.into_iter().rev().collect::<Vec<_>>(),
             Self::V9001 => containers_to_move,
         }
     }
