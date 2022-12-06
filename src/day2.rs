@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use crate::{shared::PuzzleResult, test_puzzle};
+use crate::{shared::PuzzleResult, test_solvers};
 
 mod rps;
 
@@ -62,4 +62,4 @@ fn transform_input_for_part2(input: &str) -> Vec<(rps::Move, rps::GameResult)> {
         .collect()
 }
 
-test_puzzle!(2, 15, 12);
+test_solvers!(15, 12);

@@ -5,11 +5,12 @@ mod day2;
 mod day3;
 mod day4;
 mod day5;
+mod day6;
 
 #[macro_use]
 mod shared;
 
-define_solvers!(SOLVERS, day1, day2, day3, day4, day5);
+define_solvers!(SOLVERS, day1, day2, day3, day4, day5, day6);
 
 fn main() {
     let args: Vec<String> = args().collect();
@@ -28,7 +29,8 @@ fn main() {
     let use_test_data = test == 1;
     let filename = if use_test_data { "test" } else { "input" };
 
-    let input = shared::read_input(day as u8, filename);
+    let day_input_folder = format!("day{day}");
+    let input = shared::read_input(&day_input_folder, filename);
     let solver = SOLVERS[day - 1][part - 1];
 
     let result = solver(&input);

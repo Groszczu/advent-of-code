@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use crate::{shared::PuzzleResult, test_puzzle};
+use crate::{shared::PuzzleResult, test_solvers};
 
 pub fn part1(input: &str) -> PuzzleResult {
     let rucksack = transform_input_for_part1(input);
@@ -100,4 +100,4 @@ fn transform_input_for_part2(input: &str) -> Vec<[String; 3]> {
         .collect()
 }
 
-test_puzzle!(3, 157, 70);
+test_solvers!(157, 70);

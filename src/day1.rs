@@ -1,4 +1,4 @@
-use crate::{shared::PuzzleResult, test_puzzle};
+use crate::{shared::PuzzleResult, test_solvers};
 
 pub fn part1(input: &str) -> PuzzleResult {
     let elf_calories = transform_input(input);
@@ -49,4 +49,4 @@ fn transform_input(input: &str) -> Vec<Vec<i64>> {
         .collect::<Vec<Vec<i64>>>()
 }
 
-test_puzzle!(1, 24_000, 45_000);
+test_solvers!(24_000, 45_000);

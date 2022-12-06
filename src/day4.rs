@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use crate::{shared::PuzzleResult, test_puzzle};
+use crate::{shared::PuzzleResult, test_solvers};
 
 mod cleaning;
 
@@ -43,4 +43,4 @@ fn transform_input(input: &str) -> Vec<(cleaning::Section, cleaning::Section)> {
         .collect()
 }
 
-test_puzzle!(4, 2, 4);
+test_solvers!(2, 4);

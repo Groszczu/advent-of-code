@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use crate::{shared::PuzzleResult, test_puzzle};
+use crate::{shared::PuzzleResult, test_solvers};
 
 mod crane;
 
@@ -55,4 +55,4 @@ fn get_result(crane: &Crane) -> PuzzleResult {
         .into()
 }
 
-test_puzzle!(5, "CMZ".to_string(), "MCD".to_string());
+test_solvers!("CMZ".to_string(), "MCD".to_string());

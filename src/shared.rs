@@ -27,25 +27,30 @@ impl Display for PuzzleResult {
     }
 }
 
-pub fn read_input(day: u8, filename: &str) -> String {
-    let full_path = format!("inputs/day{day}/{filename}.txt");
+pub fn read_input(folder: &str, filename: &str) -> String {
+    let full_path = format!("inputs/{folder}/{filename}.txt");
+    println!("full path: {}", full_path);
     fs::read_to_string(full_path).expect("input file should exist")
 }
 
 #[macro_export]
-macro_rules! test_puzzle {
-    ($day:expr, $part1_expected_result:expr, $part2_expected_result:expr) => {
+macro_rules! test_solvers {
+    ($part1_expected_result:expr, $part2_expected_result:expr) => {
         #[cfg(test)]
         mod tests {
             use super::{part1, part2};
             use crate::shared;
 
             fn get_test_input() -> String {
-                shared::read_input($day, "test")
+                let day_input_folder = module_path!()
+                    .replace("advent_of_code_2022::", "")
+                    .replace("::tests", "");
+                shared::read_input(&day_input_folder, "test")
             }
 
             #[test]
             fn part1_returns_correct_result_for_test_input() {
+                println!(module_path!());
                 let input = get_test_input();
                 let result = part1(&input);
                 let wrapped_expected_result: crate::shared::PuzzleResult =
