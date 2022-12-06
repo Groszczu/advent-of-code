@@ -43,8 +43,12 @@ macro_rules! test_solvers {
 
             fn get_test_input() -> String {
                 let day_input_folder = module_path!()
-                    .replace("advent_of_code_2022::", "")
-                    .replace("::tests", "");
+                    .strip_prefix("advent_of_code_2022::")
+                    .and_then(|s| s.strip_suffix("::tests"))
+                    .expect(
+                        "module path should equal to 'advent_of_code_2022 crate::day<>::tests'",
+                    );
+
                 shared::read_input(&day_input_folder, "test")
             }
 
