@@ -89,7 +89,7 @@ impl Crane {
 
 #[derive(Debug, Clone, Copy)]
 pub enum ParseCraneError {
-    ExpectedSeparatorError,
+    ExpectedSeparatorError(char),
     ExpectedNextTokenToExistError,
     UnexpectedTokenError(char),
 }
@@ -98,14 +98,13 @@ impl FromStr for Crane {
     type Err = ParseCraneError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let tokens = s.chars().collect::<Vec<_>>();
+        let mut tokens = s.chars().peekable();
 
-        let mut current_token_index = 0usize;
         let mut stack_index = 0usize;
         let mut expect_separator = false;
         let mut containers_stacks = Vec::<Vec<Container>>::new();
 
-        while let Some(&token) = tokens.get(current_token_index) {
+        while let Some(token) = tokens.next() {
             if containers_stacks.get(stack_index).is_none() {
                 containers_stacks.push(Vec::new());
             }
@@ -115,29 +114,32 @@ impl FromStr for Crane {
                 } else if token == '\n' {
                     stack_index = 0;
                 } else {
-                    return Err(ParseCraneError::ExpectedSeparatorError);
+                    return Err(ParseCraneError::ExpectedSeparatorError(token));
                 }
-                current_token_index += 1;
                 expect_separator = false;
                 continue;
             }
             if token == '[' {
                 let label = tokens
-                    .get(current_token_index + 1)
+                    .peek()
                     .ok_or(ParseCraneError::ExpectedNextTokenToExistError)?;
                 let container = Container::from(*label);
                 containers_stacks[stack_index].insert(0, container);
-                current_token_index += 3;
+
+                tokens.next();
+                tokens.next();
                 expect_separator = true;
             } else if token == ' ' {
                 if tokens
-                    .get(current_token_index + 1)
+                    .peek()
                     .ok_or(ParseCraneError::ExpectedNextTokenToExistError)?
                     .is_numeric()
                 {
                     break;
                 }
-                current_token_index += 3;
+
+                tokens.next();
+                tokens.next();
                 expect_separator = true;
             } else {
                 return Err(ParseCraneError::UnexpectedTokenError(token));

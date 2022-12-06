@@ -9,8 +9,6 @@ use crane::{Crane, CrateMover, MoveInstruction};
 pub fn part1(input: &str) -> PuzzleResult {
     let (mut crane, move_instructions) = transform_input(input);
 
-    println!("{:?}", crane);
-
     for move_instruction in move_instructions {
         crane.move_containers(&move_instruction, CrateMover::V9000);
     }
