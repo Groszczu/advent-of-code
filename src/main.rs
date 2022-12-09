@@ -8,11 +8,12 @@ mod day5;
 mod day6;
 mod day7;
 mod day8;
+mod day9;
 
 #[macro_use]
 mod shared;
 
-define_solvers!(SOLVERS, day1, day2, day3, day4, day5, day6, day7, day8);
+define_solvers!(SOLVERS, day1, day2, day3, day4, day5, day6, day7, day8, day9);
 
 fn main() {
     let args: Vec<String> = args().collect();

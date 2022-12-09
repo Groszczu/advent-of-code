@@ -24,6 +24,13 @@ fi
 # Copy day.template to src/day{n}.rs
 cp day.template "src/day$day.rs"
 
-mkdir -p "inputs/day$day"
 # Create input.txt and test.txt files in inputs/day{n}
+mkdir -p "inputs/day$day"
 touch "inputs/day$day/test.txt" "inputs/day$day/input.txt"
+
+
+prev_day="$(($day-1))"
+
+# Add new module to src/main.rs file and define solvers
+sed -i '' -E "s/mod day$prev_day;/mod day$prev_day;\nmod day$day;/g" "src/main.rs"
+sed -i '' -E "s/define_solvers\!\((.*)\);/define_solvers!(\1, day$day);/g" "src/main.rs"
