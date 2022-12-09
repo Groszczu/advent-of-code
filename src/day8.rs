@@ -132,10 +132,12 @@ pub fn part1(input: &str) -> PuzzleResult {
         vertical_edges.flat_map(|y| Direction::Right.traverse_from_edge(&tree_grid, y));
 
     let mut visible_from_outside = HashSet::new();
-    visible_from_outside.extend(visible_from_top);
-    visible_from_outside.extend(visible_from_right);
-    visible_from_outside.extend(visible_from_bottom);
-    visible_from_outside.extend(visible_from_left);
+    visible_from_outside.extend(
+        visible_from_top
+            .chain(visible_from_right)
+            .chain(visible_from_bottom)
+            .chain(visible_from_left),
+    );
 
     let result = visible_from_outside.len() as i64;
 
