@@ -8,7 +8,7 @@ use rope::{Motion, Rope};
 
 pub fn part1(input: &str) -> PuzzleResult {
     let motions = transform_input(input);
-    let mut rope = Rope::new();
+    let mut rope = Rope::new(2);
 
     for motion in &motions {
         rope.move_head(*motion);
@@ -19,9 +19,15 @@ pub fn part1(input: &str) -> PuzzleResult {
 }
 
 pub fn part2(input: &str) -> PuzzleResult {
-    let _ = transform_input(input);
+    let motions = transform_input(input);
+    let mut rope = Rope::new(10);
 
-    0.into()
+    for motion in &motions {
+        rope.move_head(*motion);
+    }
+
+    let result = rope.tail_positions().len() as i64;
+    result.into()
 }
 
 fn transform_input(input: &str) -> Vec<Motion> {
@@ -31,4 +37,4 @@ fn transform_input(input: &str) -> Vec<Motion> {
         .collect::<Vec<_>>()
 }
 
-test_solvers!(0, 0);
+test_solvers!(13, 1);

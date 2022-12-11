@@ -1,4 +1,4 @@
-use std::{collections::HashSet, str::FromStr};
+use std::{char::from_digit, collections::HashSet, fmt::Display, str::FromStr};
 
 #[derive(Debug, Clone, Copy)]
 pub enum Direction {
@@ -102,6 +102,13 @@ impl Position {
         self.y
     }
 
+    pub fn compare(&self, other: &Self) -> Self {
+        let x_comparison = self.x.cmp(&other.x) as i32;
+        let y_comparison = self.y.cmp(&other.y) as i32;
+
+        Self::with_coordinates(x_comparison, y_comparison)
+    }
+
     pub fn is_touching(&self, other: &Self) -> bool {
         let x_distance = (self.x - other.x).abs();
         let y_distance = (self.y - other.y).abs();
@@ -111,19 +118,17 @@ impl Position {
 }
 
 pub struct Rope {
-    head: Position,
-    tail: Position,
+    positions: Vec<Position>,
     tail_positions: HashSet<Position>,
 }
 
 impl Rope {
-    pub fn new() -> Self {
+    pub fn new(length: usize) -> Self {
         let mut tail_positions = HashSet::new();
         tail_positions.insert(Position::new());
 
         Self {
-            head: Position::new(),
-            tail: Position::new(),
+            positions: vec![Position::new(); length],
             tail_positions,
         }
     }
@@ -131,69 +136,74 @@ impl Rope {
     pub fn move_head(&mut self, motion: Motion) -> () {
         for _step in 0..motion.length() {
             let motion_step = Motion::new(motion.direction, 1);
-            let new_head = self.head.add(motion_step.to_position());
-            self.head = new_head;
-            if !self.head.is_touching(&self.tail) {
-                self.move_tail();
+            let head = self.positions[0];
+            let new_head = head.add(motion_step.to_position());
+            self.positions[0] = new_head;
+
+            let mut prev = new_head;
+            for tail_index in 1..self.positions.len() {
+                let tail = self.positions[tail_index];
+                if !prev.is_touching(&tail) {
+                    self.move_tail(tail_index);
+                }
+                prev = self.positions[tail_index];
             }
         }
     }
 
-    fn move_tail(&mut self) -> () {
-        let head = self.head;
-        let tail = self.tail;
+    fn move_tail(&mut self, tail_index: usize) -> () {
+        let head = self.positions[tail_index - 1];
+        let tail = self.positions[tail_index];
 
-        if head.y() == tail.y() {
-            self.move_tail_horizontally();
-        } else if head.x() == tail.x() {
-            self.move_tail_vertically();
-        } else {
-            self.move_tail_diagonally();
+        let difference_position = head.compare(&tail);
+
+        self.positions[tail_index] = tail.add(difference_position);
+
+        if tail_index == self.positions.len() - 1 {
+            self.tail_positions.insert(self.positions[tail_index]);
         }
-
-        self.tail_positions.insert(self.tail);
-    }
-
-    fn move_tail_horizontally(&mut self) -> () {
-        let motion_position = if self.head.x() < self.tail.x() {
-            Position::with_coordinates(-1, 0)
-        } else {
-            Position::with_coordinates(1, 0)
-        };
-
-        self.tail = self.tail.add(motion_position);
-    }
-
-    fn move_tail_vertically(&mut self) -> () {
-        let motion_position = if self.head.y() < self.tail.y() {
-            Position::with_coordinates(0, -1)
-        } else {
-            Position::with_coordinates(0, 1)
-        };
-
-        self.tail = self.tail.add(motion_position);
-    }
-
-    fn move_tail_diagonally(&mut self) -> () {
-        let head = self.head;
-        let tail = self.tail;
-
-        let motion_position = if head.y() < tail.y() && head.x() < tail.x() {
-            Position::with_coordinates(-1, -1)
-        } else if head.y() < tail.y() && head.x() > tail.x() {
-            Position::with_coordinates(1, -1)
-        } else if head.y() > tail.y() && head.x() < tail.x() {
-            Position::with_coordinates(-1, 1)
-        } else if head.y() > tail.y() && head.x() > tail.x() {
-            Position::with_coordinates(1, 1)
-        } else {
-            panic!("unexpected head and tail positions")
-        };
-
-        self.tail = self.tail.add(motion_position);
     }
 
     pub fn tail_positions(&self) -> &HashSet<Position> {
         &self.tail_positions
+    }
+}
+
+impl Display for Rope {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let x_positions = self.positions.iter().map(|position| position.x());
+        let y_positions = self.positions.iter().map(|position| position.y());
+
+        let min_x = x_positions.clone().min().unwrap();
+        let max_x = x_positions.max().unwrap();
+
+        let min_y = y_positions.clone().min().unwrap();
+        let max_y = y_positions.max().unwrap();
+
+        for y in (min_y - 2)..=(max_y + 2) {
+            for x in (min_x - 2)..=(max_x + 2) {
+                let rope_position = self
+                    .positions
+                    .iter()
+                    .enumerate()
+                    .find(|(_, &position)| position == Position::with_coordinates(x, y));
+
+                match rope_position {
+                    Some((index, _)) => {
+                        let label = if index == 0 {
+                            'H'
+                        } else {
+                            from_digit(index as u32, 10).unwrap()
+                        };
+                        write!(f, "{}", label)?
+                    }
+                    None => write!(f, ".")?,
+                };
+            }
+
+            writeln!(f)?;
+        }
+
+        Ok(())
     }
 }
