@@ -1,9 +1,10 @@
 use std::{
-    collections::{HashMap, HashSet},
+    cmp::Reverse,
+    collections::{BinaryHeap, HashMap, HashSet},
     str::FromStr,
 };
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct Position {
     x: i32,
     y: i32,
@@ -19,7 +20,7 @@ impl Position {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct Node {
     position: Position,
     height: u8,
@@ -51,15 +52,11 @@ impl Heightmap {
             .and_then(|row| row.get(position.x as usize))
     }
 
-    pub fn nodes(&self) -> Vec<&Node> {
-        self.nodes.iter().flatten().collect()
-    }
-
     pub fn neighbors_leading_to(&self, node: &Node) -> Vec<&Node> {
         Self::neighbors_positions(&node.position)
             .iter()
             .filter_map(|neighbor| self.get(neighbor))
-            .filter(|neighbor| 1 + neighbor.height >= node.height)
+            .filter(|neighbor| neighbor.height + 1 >= node.height)
             .collect()
     }
 
@@ -72,42 +69,34 @@ impl Heightmap {
         ]
     }
 
-    pub fn distances_to(&self, to: Position) -> HashMap<&Node, u32> {
-        let mut distance_from_start: HashMap<&Node, u32> = HashMap::new();
-        let mut unvisited: HashSet<&Node> = HashSet::new();
+    pub fn distances_to(&self, to_position: Position) -> HashMap<&Node, u32> {
+        let mut visited = HashSet::new();
+        let mut min_distance_heap = BinaryHeap::new();
+        let mut distance_map = HashMap::new();
 
-        let nodes = self.nodes();
-        unvisited.extend(nodes.iter());
-        distance_from_start.extend(nodes.iter().map(|&node| (node, std::u32::MAX)));
+        let to_node = self
+            .get(&to_position)
+            .expect("destination node should exist");
 
-        let start_node = self.get(&to).unwrap();
+        min_distance_heap.push((Reverse(0), to_node));
+        distance_map.insert(to_node, 0);
 
-        distance_from_start.insert(start_node, 0);
-
-        while !unvisited.is_empty() {
-            let node = unvisited
-                .iter()
-                .min_by(|node_a, node_b| {
-                    distance_from_start[*node_a].cmp(&distance_from_start[*node_b])
-                })
-                .cloned()
-                .unwrap();
-
-            if distance_from_start[node] == std::u32::MAX {
-                break;
-            }
-
-            unvisited.remove(node);
+        while let Some((Reverse(distance_to_node), node)) = min_distance_heap.pop() {
+            visited.insert(node);
 
             for neighbor in self.neighbors_leading_to(node) {
-                let new_distance = distance_from_start[node] + 1;
-                if new_distance < *distance_from_start.get(neighbor).unwrap_or(&std::u32::MAX) {
-                    distance_from_start.insert(neighbor, new_distance);
+                if visited.contains(neighbor) {
+                    continue;
+                }
+                let new_distance = distance_to_node + 1;
+                if new_distance < *distance_map.get(neighbor).unwrap_or(&std::u32::MAX) {
+                    distance_map.insert(neighbor, new_distance);
+                    min_distance_heap.push((Reverse(new_distance), neighbor))
                 }
             }
         }
 
-        distance_from_start
+        distance_map
     }
 
     fn char_to_height(c: char) -> u8 {

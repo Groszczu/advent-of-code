@@ -9,21 +9,21 @@ use dijkstra::Heightmap;
 use self::dijkstra::Position;
 
 pub fn part1(input: &str) -> PuzzleResult {
-    let (start_position, end, heightmap) = transform_input_for_part_1(input);
+    let (start_position, end_position, heightmap) = transform_input_for_part_1(input);
 
     let start_node = heightmap
         .get(&start_position)
         .expect("start node should exist");
 
-    let distance_from_start_to_end = heightmap.distances_to(end)[start_node] as i64;
+    let distance_from_start_to_end = heightmap.distances_to(end_position)[start_node] as i64;
 
     distance_from_start_to_end.into()
 }
 
 pub fn part2(input: &str) -> PuzzleResult {
-    let (start_positions, end, heightmap) = transform_input_for_part_2(input);
+    let (start_positions, end_position, heightmap) = transform_input_for_part_2(input);
 
-    let distances_to_end = heightmap.distances_to(end);
+    let distances_to_end = heightmap.distances_to(end_position);
 
     let min_distance = distances_to_end
         .iter()
