@@ -29,7 +29,6 @@ impl Display for PuzzleResult {
 
 pub fn read_input(folder: &str, filename: &str) -> String {
     let full_path = format!("inputs/{folder}/{filename}.txt");
-    println!("full path: {}", full_path);
     fs::read_to_string(full_path).expect("input file should exist")
 }
 

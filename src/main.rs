@@ -1,8 +1,6 @@
 use std::env::args;
 
 mod day1;
-mod day10;
-mod day11;
 mod day2;
 mod day3;
 mod day4;
@@ -12,10 +10,14 @@ mod day7;
 mod day8;
 mod day9;
 
+mod day10;
+mod day11;
+mod day12;
+
 #[macro_use]
 mod shared;
 
-define_solvers!(SOLVERS, day1, day2, day3, day4, day5, day6, day7, day8, day9, day10, day11);
+define_solvers!(SOLVERS, day1, day2, day3, day4, day5, day6, day7, day8, day9, day10, day11, day12);
 
 fn main() {
     let args: Vec<String> = args().collect();
