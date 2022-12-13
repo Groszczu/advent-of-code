@@ -1,6 +1,6 @@
-# Advent of code
+# Advent of Code
 
-My solutions to [Advent of code](https://adventofcode.com) puzzles.
+My solutions to [Advent of Code](https://adventofcode.com) puzzles.
 
 ## Editions
 
